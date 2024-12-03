@@ -1,26 +1,27 @@
-from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel, Field
-import models
-import models.db
-import models.models
-from models.db import engine, SessionLocal
-from sqlalchemy.orm import Session
-from typing import Annotated
-from views.reportes_views import router as reportes_router
+import uvicorn
+from fastapi import FastAPI
+import views
+from models import db
 
-app = FastAPI()
-models.models.Base.metadata.create_all(bind=engine)
-app.include_router(reportes_router)
 
-class ReporteBase(BaseModel):
-    fechaEmision: str
-    emisor: str
-    estudiante: int #el id del estudiante o el numId
+def create_app():
+    app = FastAPI(
+        docs_url="/reportes/docs",
+        openapi_url="/reportes/openapi.json",
+        redoc_url=None,
+    )
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    @app.on_event("startup")
+    async def on_startup():
+        await db.set_reportes_db()
+
+    app.include_router(views.router)
+
+    return app
+
+
+if __name__ == "__main__":
+    app = create_app()
+    # avoid redirects
+    uvicorn.run(app, host="0.0.0.0", port=8080)
         

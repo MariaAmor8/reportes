@@ -1,12 +1,18 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+import motor.motor_asyncio
+from pydantic.functional_validators import BeforeValidator
+from typing_extensions import Annotated
 
-URL_DATABASE = 'postgresql://usuarioo:kageyama27@10.128.0.86:5432/reportes'
-# estructura postgresql://<usuario>:<contraseña>@<host>:<puerto>/<nombre_base_de_datos>
+client = motor.motor_asyncio.AsyncIOMotorClient(
+    "mongodb://monitoring_user:isis2503@10.128.0.86:27017?retryWrites=true&w=majority"
+)
+db = client.get_database("reportes_db")
+reportes_collection = db.get_collection("reportes")
 
-engine = create_engine(URL_DATABASE)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+async def set_reportes_db():
+    # Creates a unique index on the code field
+    await reportes_collection.create_index("code", unique=True)
 
-Base = declarative_base()
+
+# Represents an ObjectId field in the database.
+PyObjectId = Annotated[str, BeforeValidator(str)]
