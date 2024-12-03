@@ -1,7 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter
 import logic.reportes_logic as reportes_service
-from pydantic import BaseModel
 from models.models import Reporte, ReporteOut, ReporteCollection
 from fastapi import APIRouter, status, Body
 

@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 from models.db import reportes_collection  # Importa el modelo Reporte
 from fastapi.encoders import jsonable_encoder  # Para convertir el resultado en JSON
 from models.models import Reporte, ReporteCollection
