@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 import views
 from models import db
-import views.reportes_views
+import views
 
 
 def create_app():
@@ -16,7 +16,7 @@ def create_app():
     async def on_startup():
         await db.set_reportes_db()
 
-    app.include_router(views.reportes_views.router)
+    app.include_router(views.router)
 
     return app
 

@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status, Body
 import logic.reportes_logic as reportes_service
 from models.models import Reporte, ReporteOut, ReporteCollection
-from fastapi import APIRouter, status, Body
+
 
 router = APIRouter()
 ENDPOINT_NAME = "/reportes"
