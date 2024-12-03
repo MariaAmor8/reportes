@@ -2,13 +2,13 @@
 # ****** Departamento de Ingeniería de Sistemas y Computación ******
 # ********** Arquitectura y diseño de Software - ISIS2503 **********
 #
-# Infraestructura para laboratorio de microservicios con Django (microservicio Places)
+# Infraestructura para laboratorio de microservicios con Django (microservicio Reportes)
 # Elementos a desplegar:
 # 1. Firewalls:
-#    - msd-service-db
+#    - msd-service-mongodb
 # 1. Instancias MVs:
-#    - db-reportes (postgresql instalado y configurado)
-#    - reportes-app (Servicio de reportes instalado y configurado)
+#    - db-reportes-db (mongodb instalado y configurado)
+#    - db-reportes-ms (Servicio de reportes instalado y configurado)
 
 resources:
 # Firewall rules
@@ -21,11 +21,11 @@ resources:
     sourceTags: 
     - msd-services-firewall
     targetTags:
-    - msd-service-db
+    - msd-service-mongodb
     allowed:
     - IPProtocol: TCP
       ports: 
-      - 5432
+      - 27017
 
 # Database instance
 - name: db-reportes
@@ -54,17 +54,13 @@ resources:
       - key: startup-script
         value: |
           #!/bin/bash
-          sudo apt-get update
-          sudo apt-get install -y postgresql postgresql-contrib
-          sudo -u postgres psql -c "CREATE USER usuarioo WITH PASSWORD 'kageyama27';"
-          sudo -u postgres createdb -O usuarioo reportes
-          echo "host all all 0.0.0.0/0 trust" | sudo tee -a /etc/postgresql/12/main/pg_hba.conf
-          echo "listen_addresses='*'" | sudo tee -a /etc/postgresql/12/main/postgresql.conf
-          echo "max_connections=2000" | sudo tee -a /etc/postgresql/12/main/postgresql.conf
-          sudo service postgresql restart
+          docker run --restart=always -d --name reportes-db -p 27017:27017 \
+                            -e MONGO_INITDB_ROOT_USERNAME=monitoring_user \
+                            -e MONGO_INITDB_ROOT_PASSWORD=isis2503 \
+                            mongodb/mongodb-community-server
 
 # Service instance
-- name: reportes-app
+- name: db-reportes-ms
   type: compute.v1.instance
   properties:
     zone: us-central1-a
