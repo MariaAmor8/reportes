@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from views import reportes_view
+from . import reportes_view
 
 API_PREFIX = "/api"
 router = APIRouter()
